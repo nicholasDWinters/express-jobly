@@ -193,6 +193,22 @@ describe("GET /companies/:handle", function () {
         description: "Desc1",
         numEmployees: 1,
         logoUrl: "http://c1.img",
+        jobs: [
+          {
+            id: expect.any(Number),
+            title: 'job1',
+            salary: 20000,
+            equity: "0.2",
+
+          },
+          {
+            id: expect.any(Number),
+            title: 'job2',
+            salary: 40000,
+            equity: "0.4",
+
+          }
+        ]
       },
     });
   });
@@ -204,6 +220,7 @@ describe("GET /companies/:handle", function () {
         handle: "c2",
         name: "C2",
         description: "Desc2",
+        jobs: [],
         numEmployees: 2,
         logoUrl: "http://c2.img",
       },

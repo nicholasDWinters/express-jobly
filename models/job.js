@@ -64,7 +64,7 @@ class Job {
         let filters = {
             title: term.title || null,
             minSalary: term.minSalary || 0,
-            hasEquity: term.hasEquity || false
+            hasEquity: Boolean(term.hasEquity) || false
         };
         if (filters.title !== null) {
             filters.title = '%' + filters.title + '%';

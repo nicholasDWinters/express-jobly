@@ -4,13 +4,14 @@
 
 const jsonschema = require("jsonschema");
 const express = require("express");
-
+const db = require('../db');
 const { BadRequestError } = require("../expressError");
 const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const Job = require("../models/job");
 
 const router = new express.Router();
 
@@ -78,7 +79,20 @@ router.get("/", async function (req, res, next) {
 
 router.get("/:handle", async function (req, res, next) {
   try {
-    const company = await Company.get(req.params.handle);
+    const result = await Company.get(req.params.handle);
+    const jobs = await db.query(`SELECT id, title, salary, equity FROM jobs WHERE company_handle = $1`, [req.params.handle]);
+
+    let company = {
+      handle: result.handle,
+      name: result.name,
+      description: result.description,
+      numEmployees: result.numEmployees,
+      logoUrl: result.logoUrl,
+      jobs: []
+    }
+    for (let job of jobs.rows) {
+      company.jobs.push(job);
+    }
     return res.json({ company });
   } catch (err) {
     return next(err);

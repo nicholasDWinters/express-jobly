@@ -50,6 +50,7 @@ router.post("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
 router.get("/", async function (req, res, next) {
     try {
         if (req.query.title || req.query.minSalary || req.query.hasEquity) {
+
             let jobs = await Job.filterBy(req.query);
             return res.json({ jobs });
         } else if (Object.keys(req.query).length > 0) {
