@@ -2,7 +2,6 @@
 
 const db = require("../db.js");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { filterBy } = require("./company.js");
 const Company = require("./company.js");
 const {
   commonBeforeAll,
