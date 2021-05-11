@@ -126,66 +126,88 @@ describe("GET /jobs", function () {
 });
 
 
-/************************************** GET /companies with filters */
+/************************************** GET /jobs with filters */
 
-// describe("GET /companies with filters", function () {
-//     test("filters by name correctly", async function () {
-//         const resp = await request(app).get("/companies?name=1");
-//         expect(resp.body).toEqual({
-//             companies:
-//                 [
-//                     {
-//                         handle: "c1",
-//                         name: "C1",
-//                         description: "Desc1",
-//                         numEmployees: 1,
-//                         logoUrl: "http://c1.img",
-//                     }
-//                 ]
-//         });
-//     });
-//     test("filters by name and min employees correctly", async function () {
-//         const resp = await request(app).get("/companies?name=c&minEmployees=2");
-//         expect(resp.body).toEqual({
-//             companies:
-//                 [
-//                     {
-//                         handle: "c2",
-//                         name: "C2",
-//                         description: "Desc2",
-//                         numEmployees: 2,
-//                         logoUrl: "http://c2.img",
-//                     },
-//                     {
-//                         handle: "c3",
-//                         name: "C3",
-//                         description: "Desc3",
-//                         numEmployees: 3,
-//                         logoUrl: "http://c3.img",
-//                     }
-//                 ]
-//         });
-//     });
-//     test("filters by max employees correctly", async function () {
-//         const resp = await request(app).get("/companies?maxEmployees=1");
-//         expect(resp.body).toEqual({
-//             companies:
-//                 [
-//                     {
-//                         handle: "c1",
-//                         name: "C1",
-//                         description: "Desc1",
-//                         numEmployees: 1,
-//                         logoUrl: "http://c1.img",
-//                     }
-//                 ]
-//         });
-//     });
-//     test("throws error if query string is present but does not include correct terminology", async function () {
-//         const resp = await request(app).get("/companies?fake=blah");
-//         expect(resp.statusCode).toEqual(400);
-//     });
-// });
+describe("GET /jobs with filters", function () {
+    test("filters by title correctly", async function () {
+        const resp = await request(app).get("/jobs?title=3");
+        expect(resp.body).toEqual({
+            jobs:
+                [
+                    {
+                        id: expect.any(Number),
+                        title: 'job3',
+                        salary: 60000,
+                        equity: "0.6",
+                        companyHandle: 'c3'
+                    }
+                ]
+        });
+    });
+    test("filters by title and hasEquity correctly", async function () {
+        const resp = await request(app).get("/jobs?title=3&hasEquity=true");
+        expect(resp.body).toEqual({
+            jobs:
+                [
+                    {
+                        id: expect.any(Number),
+                        title: 'job3',
+                        salary: 60000,
+                        equity: "0.6",
+                        companyHandle: 'c3'
+                    }
+                ]
+        });
+    });
+    test("filters hasEquity correctly", async function () {
+        const resp = await request(app).get("/jobs?hasEquity=true");
+        expect(resp.body).toEqual({
+            jobs:
+                [
+                    {
+                        id: expect.any(Number),
+                        title: 'job1',
+                        salary: 20000,
+                        equity: "0.2",
+                        companyHandle: 'c1'
+                    },
+                    {
+                        id: expect.any(Number),
+                        title: 'job2',
+                        salary: 40000,
+                        equity: "0.4",
+                        companyHandle: 'c1'
+                    },
+                    {
+                        id: expect.any(Number),
+                        title: 'job3',
+                        salary: 60000,
+                        equity: "0.6",
+                        companyHandle: 'c3'
+                    },
+                ],
+        });
+    });
+    test("filters by minSalary correctly", async function () {
+        const resp = await request(app).get("/jobs?minSalary=45000");
+        expect(resp.body).toEqual({
+            jobs:
+                [
+                    {
+                        id: expect.any(Number),
+                        title: 'job3',
+                        salary: 60000,
+                        equity: "0.6",
+                        companyHandle: 'c3'
+                    }
+                ]
+        });
+    });
+    test("throws error if query string is present but does not include correct terminology", async function () {
+        const resp = await request(app).get("/jobs?fake=blah");
+        expect(resp.statusCode).toEqual(400);
+    });
+});
 
 
 /************************************** GET /jobs/:id */
