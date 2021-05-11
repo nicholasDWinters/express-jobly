@@ -21,13 +21,18 @@ describe("create", function () {
     const newJob = {
         title: "new",
         salary: 50000,
-        equity: "0.2",
+        equity: 0.20,
         companyHandle: 'c3'
     };
 
     test("works", async function () {
         let job = await Job.create(newJob);
-        expect(job).toEqual(newJob);
+        expect(job).toEqual({
+            title: "new",
+            salary: 50000,
+            equity: "0.2",
+            companyHandle: 'c3'
+        });
 
         const result = await db.query(
             `SELECT title, salary, equity, company_handle
@@ -48,7 +53,7 @@ describe("create", function () {
         const badJob = {
             title: "new",
             salary: 50000,
-            equity: '0.20',
+            equity: 0.20,
             companyHandle: 'd3'
         };
         try {
