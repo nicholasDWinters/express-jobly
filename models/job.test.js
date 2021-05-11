@@ -99,70 +99,75 @@ describe("findAll", function () {
 
 /************************************** filterBy */
 
-// describe("filterBy", function () {
-//     test("works: with name filter", async function () {
-//         let filtered = { "name": "3" };
-//         let companies = await Company.filterBy(filtered);
-//         expect(companies).toEqual([
-//             {
-//                 handle: "c3",
-//                 name: "C3",
-//                 description: "Desc3",
-//                 numEmployees: 3,
-//                 logoUrl: "http://c3.img",
-//             },
-//         ]);
-//     });
-//     test("works: with name & num_employees filter", async function () {
-//         let filtered = { "name": "c", "maxEmployees": 2 };
-//         let companies = await Company.filterBy(filtered);
-//         expect(companies).toEqual([
-//             {
-//                 handle: "c1",
-//                 name: "C1",
-//                 description: "Desc1",
-//                 numEmployees: 1,
-//                 logoUrl: "http://c1.img",
-//             },
-//             {
-//                 handle: "c2",
-//                 name: "C2",
-//                 description: "Desc2",
-//                 numEmployees: 2,
-//                 logoUrl: "http://c2.img",
-//             }
-//         ]);
-//     });
-//     test("works: with num_employees filters", async function () {
-//         let filtered = { "maxEmployees": 2, "minEmployees": 1 };
-//         let companies = await Company.filterBy(filtered);
-//         expect(companies).toEqual([
-//             {
-//                 handle: "c1",
-//                 name: "C1",
-//                 description: "Desc1",
-//                 numEmployees: 1,
-//                 logoUrl: "http://c1.img",
-//             },
-//             {
-//                 handle: "c2",
-//                 name: "C2",
-//                 description: "Desc2",
-//                 numEmployees: 2,
-//                 logoUrl: "http://c2.img",
-//             }
-//         ]);
-//     });
-//     test("works: throws error if min is greater than max employees", async function () {
-//         try {
-//             let filtered = { "maxEmployees": 1, "minEmployees": 2 };
-//             await Company.filterBy(filtered);
-//             fail();
-//         } catch (err) {
-//             expect(err instanceof BadRequestError).toBeTruthy();
-//         }
-//     });
-// });
+describe("filterBy", function () {
+    test("works: with title filter", async function () {
+        let filtered = { "title": "3" };
+        let jobs = await Job.filterBy(filtered);
+        expect(jobs).toEqual([
+            {
+                id: expect.any(Number),
+                title: "job3",
+                salary: 75000,
+                equity: "0.60",
+                companyHandle: 'c2'
+            },
+        ]);
+    });
+    test("works: with title & hasEquity filter", async function () {
+        let filtered = { "title": "3", "hasEquity": true };
+        let jobs = await Job.filterBy(filtered);
+        expect(jobs).toEqual([
+            {
+                id: expect.any(Number),
+                title: "job3",
+                salary: 75000,
+                equity: "0.60",
+                companyHandle: 'c2'
+            }
+        ]);
+    });
+    test("works: with hasEquity filter", async function () {
+        let filtered = { "hasEquity": true };
+        let jobs = await Job.filterBy(filtered);
+        expect(jobs).toEqual([
+            {
+                id: expect.any(Number),
+                title: "job1",
+                salary: 20000,
+                equity: "0.25",
+                companyHandle: 'c1'
+            },
+            {
+                id: expect.any(Number),
+                title: "job2",
+                salary: 40000,
+                equity: "0.40",
+                companyHandle: 'c1'
+            },
+            {
+                id: expect.any(Number),
+                title: "job3",
+                salary: 75000,
+                equity: "0.60",
+                companyHandle: 'c2'
+            },
+        ]);
+    });
+    test("works: with minSalary filter", async function () {
+        let filtered = { "minSalary": 60000 };
+        let jobs = await Job.filterBy(filtered);
+        expect(jobs).toEqual([
+            {
+                id: expect.any(Number),
+                title: "job3",
+                salary: 75000,
+                equity: "0.60",
+                companyHandle: 'c2'
+            }
+        ]);
+    });
+
+});
 
 
 /************************************** get */

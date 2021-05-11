@@ -52,39 +52,39 @@ class Job {
     }
 
 
-    // /** Filter companies by the included query terms. If filtering by name, search is case-insensitive and will find all companies similar to that name. 
-    //  * minEmployees finds companies that have more than the queried number, maxEmployees finds companies with less than that number of employees.
+    // /** Filter jobs by the included query terms. If filtering by title, search is case-insensitive and will find all jobs similar to that title. 
+    //  * minSalary finds jobs that pay at least that salary, and hasEquity limits search to jobs with equity greater than 0
     //  * 
-    //  * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+    //  * Returns [{ id, title, salary, equity, company_handle }, ...]
     //  * 
     //  * */
-    // static async filterBy(term) {
+    static async filterBy(term) {
 
 
-    //     let filters = {
-    //         name: term.name || null,
-    //         minEmployees: term.minEmployees || 0,
-    //         maxEmployees: term.maxEmployees || 10000000
-    //     };
-    //     if (filters.name !== null) {
-    //         filters.name = '%' + filters.name + '%';
-    //     }
-    //     if (filters.minEmployees > filters.maxEmployees) throw new BadRequestError('Min employees cannot be greater than max employees.');
+        let filters = {
+            title: term.title || null,
+            minSalary: term.minSalary || 0,
+            hasEquity: term.hasEquity || false
+        };
+        if (filters.title !== null) {
+            filters.title = '%' + filters.title + '%';
+        }
 
+        if ((term.title && filters.hasEquity === true)) {
+            const jobs = await db.query(`SELECT id, title, salary, equity, company_handle AS "companyHandle" FROM jobs WHERE title ILIKE $1 AND equity > 0 AND salary >= $2`, [filters.title, filters.minSalary]);
+            return jobs.rows;
 
-    //     if ((term.name && term.maxEmployees) || (term.name && term.minEmployees)) {
-    //         const companies = await db.query(`SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies WHERE name ILIKE $1 AND num_employees BETWEEN $2 AND $3`, [filters.name, filters.minEmployees, filters.maxEmployees]);
-    //         return companies.rows;
-
-    //     } else if (term.name) {
-    //         const companies = await db.query(`SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies WHERE name ILIKE $1`, [filters.name]);
-    //         return companies.rows;
-
-    //     } else {
-    //         const companies = await db.query(`SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies WHERE num_employees BETWEEN $1 AND $2`, [filters.minEmployees, filters.maxEmployees]);
-    //         return companies.rows;
-    //     }
-    // }
+        } else if (term.title) {
+            const jobs = await db.query(`SELECT id, title, salary, equity, company_handle AS "companyHandle" FROM jobs WHERE title ILIKE $1 AND salary >= $2`, [filters.title, filters.minSalary]);
+            return jobs.rows;
+        } else if (filters.hasEquity === true) {
+            const jobs = await db.query(`SELECT id, title, salary, equity, company_handle AS "companyHandle" FROM jobs WHERE equity > 0 AND salary >= $1`, [filters.minSalary]);
+            return jobs.rows;
+        } else {
+            const jobs = await db.query(`SELECT id, title, salary, equity, company_handle AS "companyHandle" FROM jobs WHERE salary >= $1`, [filters.minSalary]);
+            return jobs.rows;
+        }
+    }
 
 
 

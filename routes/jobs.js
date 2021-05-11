@@ -41,16 +41,23 @@ router.post("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
 
 /** GET /  =>
  *   { jobs: [ { id, title, salary, equity, company_handle }, ...] }
- *
+ * 
+ * can filter by job title, minSalary, or if a job hasEquity
+ * 
  * Authorization required: none
  */
 
 router.get("/", async function (req, res, next) {
     try {
-
-        const jobs = await Job.findAll();
-        return res.json({ jobs });
-
+        if (req.query.title || req.query.minSalary || req.query.hasEquity) {
+            let jobs = await Job.filterBy(req.query);
+            return res.json({ jobs });
+        } else if (Object.keys(req.query).length > 0) {
+            throw new BadRequestError('Query must contain title, minSalary, or hasEquity.');
+        } else {
+            const jobs = await Job.findAll();
+            return res.json({ jobs });
+        }
     } catch (err) {
         return next(err);
     }
