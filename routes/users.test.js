@@ -230,6 +230,50 @@ describe("GET /users/:username", function () {
     expect(resp.statusCode).toEqual(404);
   });
 });
+/************************************** POST /users/:username/jobs/:id */
+
+describe("POST /users/:username/jobs/:id", function () {
+  test("works for admins", async function () {
+    const result = await db.query("SELECT id FROM jobs WHERE title = 'job1'");
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${result.rows[0].id}`)
+      .set("authorization", `Bearer ${u3Token}`);
+    expect(resp.body).toEqual({
+      applied: result.rows[0].id
+    });
+  });
+
+  test("works for correct user", async function () {
+    const result = await db.query("SELECT id FROM jobs WHERE title = 'job1'");
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${result.rows[0].id}`)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.body).toEqual({
+      applied: result.rows[0].id
+    });
+  });
+
+  test("unauth for anon", async function () {
+    const result = await db.query("SELECT id FROM jobs WHERE title = 'job1'");
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${result.rows[0].id}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("not found if user not found", async function () {
+    const result = await db.query("SELECT id FROM jobs WHERE title = 'job1'");
+    const resp = await request(app)
+      .post(`/users/u7/jobs/${result.rows[0].id}`)
+      .set("authorization", `Bearer ${u3Token}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+  test("not found if job not found", async function () {
+    const resp = await request(app)
+      .post(`/users/u7/jobs/400`)
+      .set("authorization", `Bearer ${u3Token}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+});
 
 /************************************** PATCH /users/:username */
 
