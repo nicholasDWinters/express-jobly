@@ -63,7 +63,7 @@ router.get("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
 
 /** GET /[username] => { user }
  *
- * Returns { username, firstName, lastName, isAdmin }
+ * Returns { username, firstName, lastName, isAdmin, jobs: [] }
  *
  * Authorization required: correct user or admin
  **/
@@ -71,7 +71,7 @@ router.get("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
 router.get("/:username", correctUserOrAdmin, async function (req, res, next) {
   try {
     const user = await User.get(req.params.username);
-    return res.json({ user });
+    return res.json(user);
   } catch (err) {
     return next(err);
   }

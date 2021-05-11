@@ -134,12 +134,23 @@ class User {
            WHERE username = $1`,
       [username],
     );
-
     const user = userRes.rows[0];
+    const jobsRes = await db.query(`SELECT job_id FROM applications WHERE username = $1`, [user.username]);
+    const jobs = jobsRes.rows;
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
-
-    return user;
+    let allInfo = {
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      jobs: []
+    }
+    for (let job of jobs) {
+      allInfo.jobs.push(job.job_id);
+    }
+    return allInfo;
   }
 
   /** Update user data with `data`.
