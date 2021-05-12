@@ -158,13 +158,7 @@ describe("filterBy", function () {
 describe("get", function () {
   test("works", async function () {
     let company = await Company.get("c1");
-    expect(company).toEqual({
-      handle: "c1",
-      name: "C1",
-      description: "Desc1",
-      numEmployees: 1,
-      logoUrl: "http://c1.img",
-    });
+    expect(company).toEqual([{ description: "Desc1", equity: "0.25", handle: "c1", id: expect.any(Number), logoUrl: "http://c1.img", name: "C1", numEmployees: 1, salary: 20000, title: "job1" }, { description: "Desc1", equity: "0.40", handle: "c1", id: expect.any(Number), logoUrl: "http://c1.img", name: "C1", numEmployees: 1, salary: 40000, title: "job2" }]);
   });
 
   test("not found if no such company", async function () {

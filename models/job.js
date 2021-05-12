@@ -77,9 +77,11 @@ class Job {
         } else if (term.title) {
             const jobs = await db.query(`SELECT id, title, salary, equity, company_handle AS "companyHandle" FROM jobs WHERE title ILIKE $1 AND salary >= $2`, [filters.title, filters.minSalary]);
             return jobs.rows;
+
         } else if (filters.hasEquity === true) {
             const jobs = await db.query(`SELECT id, title, salary, equity, company_handle AS "companyHandle" FROM jobs WHERE equity > 0 AND salary >= $1`, [filters.minSalary]);
             return jobs.rows;
+
         } else {
             const jobs = await db.query(`SELECT id, title, salary, equity, company_handle AS "companyHandle" FROM jobs WHERE salary >= $1`, [filters.minSalary]);
             return jobs.rows;

@@ -140,12 +140,44 @@ describe("get", function () {
       lastName: "U1L",
       email: "u1@email.com",
       isAdmin: false,
+      jobs: [expect.any(Number)]
     });
   });
 
   test("not found if no such user", async function () {
     try {
       await User.get("nope");
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+});
+
+/************************************** apply */
+
+describe("apply", function () {
+  test("works", async function () {
+    const result = await db.query(`SELECT id FROM jobs WHERE title = 'job2'`);
+    let application = await User.apply("u1", result.rows[0].id);
+    expect(application).toEqual({
+      job_id: result.rows[0].id
+    });
+  });
+
+  test("not found if no such user", async function () {
+    try {
+      const result = await db.query(`SELECT id FROM jobs WHERE title = 'job2'`);
+      await User.apply("nope", result.rows[0].id);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+
+  test("not found if no such job", async function () {
+    try {
+      await User.apply("u1", 0);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -215,7 +247,7 @@ describe("remove", function () {
   test("works", async function () {
     await User.remove("u1");
     const res = await db.query(
-        "SELECT * FROM users WHERE username='u1'");
+      "SELECT * FROM users WHERE username='u1'");
     expect(res.rows.length).toEqual(0);
   });
 

@@ -113,7 +113,6 @@ router.patch("/:username", correctUserOrAdmin, async function (req, res, next) {
 
 router.post("/:username/jobs/:id", correctUserOrAdmin, async function (req, res, next) {
   try {
-
     const application = await User.apply(req.params.username, req.params.id);
     return res.json({ applied: application.job_id });
   } catch (err) {

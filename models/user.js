@@ -125,31 +125,23 @@ class User {
 
   static async get(username) {
     const userRes = await db.query(
-      `SELECT username,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email,
-                  is_admin AS "isAdmin"
-           FROM users
-           WHERE username = $1`,
+      `SELECT u.username, u.first_name AS "firstName", u.last_name AS "lastName", u.email, u.is_admin AS "isAdmin", a.job_id FROM users u LEFT JOIN applications a ON u.username = a.username WHERE u.username = $1`,
       [username],
     );
+
     const user = userRes.rows[0];
-    const jobsRes = await db.query(`SELECT job_id FROM applications WHERE username = $1`, [user.username]);
-    const jobs = jobsRes.rows;
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+
     let allInfo = {
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       isAdmin: user.isAdmin,
-      jobs: []
+      jobs: userRes.rows.map(r => r.job_id)
     }
-    for (let job of jobs) {
-      allInfo.jobs.push(job.job_id);
-    }
+
     return allInfo;
   }
 
@@ -201,7 +193,9 @@ class User {
     return user;
   }
 
-  /* allows a user to apply to a job, given a username and job id*/
+  /* allows a user to apply to a job, given a username and job id
+  checks to make sure both the username and the job exist, if not, throws an error
+  returns the job id*/
 
   static async apply(username, jobId) {
 

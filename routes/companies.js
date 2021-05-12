@@ -56,6 +56,7 @@ router.get("/", async function (req, res, next) {
     if (req.query.name || req.query.minEmployees || req.query.maxEmployees) {
       let companies = await Company.filterBy(req.query);
       return res.json({ companies });
+
     } else if (Object.keys(req.query).length > 0) {
       throw new BadRequestError('Query must contain name, minEmployees, or maxEmployees.');
 
@@ -80,19 +81,26 @@ router.get("/", async function (req, res, next) {
 router.get("/:handle", async function (req, res, next) {
   try {
     const result = await Company.get(req.params.handle);
-    const jobs = await db.query(`SELECT id, title, salary, equity FROM jobs WHERE company_handle = $1`, [req.params.handle]);
 
     let company = {
-      handle: result.handle,
-      name: result.name,
-      description: result.description,
-      numEmployees: result.numEmployees,
-      logoUrl: result.logoUrl,
+      handle: result[0].handle,
+      name: result[0].name,
+      description: result[0].description,
+      numEmployees: result[0].numEmployees,
+      logoUrl: result[0].logoUrl,
       jobs: []
     }
-    for (let job of jobs.rows) {
-      company.jobs.push(job);
+    if (result[0].id !== null) {
+      for (let row of result) {
+        company.jobs.push({
+          id: row.id,
+          title: row.title,
+          salary: row.salary,
+          equity: row.equity
+        })
+      }
     }
+
     return res.json({ company });
   } catch (err) {
     return next(err);
